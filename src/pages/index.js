@@ -7,7 +7,7 @@ import { MediaCard } from "../components/media-card";
 import { LinkButton } from "../components/link-button";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-export default function Home({ articles, blogs }) {
+export default function Home({ blogs, works, intro }) {
     return (
         <Layout>
             <Section title={"Introduction"} copy={"自己紹介"}>
@@ -21,7 +21,7 @@ export default function Home({ articles, blogs }) {
                             spaceBetween: 20,
                             slidesPerView: 1.33333,
                         },
-                        480: {
+                        576: {
                             spaceBetween: 30,
                             slidesPerView: 2,
                         },
@@ -31,9 +31,14 @@ export default function Home({ articles, blogs }) {
                         },
                     }}
                 >
-                    <SwiperSlide className={""}>
-                        <div className={"c-content-box"}></div>
-                    </SwiperSlide>
+                    {intro.map((intro) => (
+                        <SwiperSlide key={intro.title} className={""}>
+                            <div className={"c-box"}>
+                                {intro.title}
+                                {intro.description}
+                            </div>
+                        </SwiperSlide>
+                    ))}
                 </Swiper>
             </Section>
             <Section title={"Works"} copy={"こんにちは"}>
@@ -47,7 +52,7 @@ export default function Home({ articles, blogs }) {
                             spaceBetween: 20,
                             slidesPerView: 1.33333,
                         },
-                        480: {
+                        576: {
                             spaceBetween: 30,
                             slidesPerView: 2,
                         },
@@ -55,31 +60,30 @@ export default function Home({ articles, blogs }) {
                             spaceBetween: 40,
                             slidesPerView: 3,
                         },
-                        960: {
+                        992: {
                             spaceBetween: 40,
                             slidesPerView: 4,
                         },
                     }}
                 >
-                    {blogs.map((blog) => (
-                        <SwiperSlide key={blog.id} className={""}>
+                    {works.slice(-10).map((work) => (
+                        <SwiperSlide key={work.id} className={""}>
                             <MediaCard
-                                title={blog.title}
-                                slug={`/blog/${blog.id}`}
+                                title={work.title}
+                                slug={`/work/${work.id}`}
                             />
                         </SwiperSlide>
                     ))}
                 </Swiper>
             </Section>
-
             <Section title={"Blog"} copy={"こんにちは"}>
                 <div className={"l-grid-full l-grid"}>
-                    {articles.map((article) => (
-                        <div key={article.id} className={"l-grid-small"}>
+                    {blogs.slice(-4).map((blog) => (
+                        <div key={blog.id} className={"l-grid-small"}>
                             <PostCard
-                                title={article.title}
-                                category={article.category}
-                                slug={`/article/${article.id}`}
+                                title={blog.title}
+                                category={blog.category.category}
+                                slug={`/blog/${blog.id}`}
                             />
                         </div>
                     ))}
@@ -96,20 +100,21 @@ export const getStaticProps = async () => {
     const key = {
         headers: { "X-API-KEY": process.env.API_KEY },
     };
-    const resBlog = await fetch(
-        "https://hrkmtsmt.microcms.io/api/v1/blog",
-        key
-    );
-    const dataBlog = await resBlog.json();
-    const resArticle = await fetch(
-        "https://hrkmtsmt.microcms.io/api/v1/article",
-        key
-    );
-    const dataArticle = await resArticle.json();
+    const res = [
+        await fetch("https://hrkmtsmt.microcms.io/api/v1/work", key),
+        await fetch("https://hrkmtsmt.microcms.io/api/v1/blog", key),
+        await fetch("https://hrkmtsmt.microcms.io/api/v1/feature/intro", key),
+    ];
+    const data = [
+        await res[0].json(),
+        await res[1].json(),
+        await res[2].json(),
+    ];
     return {
         props: {
-            blogs: dataBlog.contents,
-            articles: dataArticle.contents,
+            works: data[0].contents,
+            blogs: data[1].contents,
+            intro: data[2].body,
         },
     };
 };

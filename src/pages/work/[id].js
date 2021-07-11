@@ -4,16 +4,16 @@ import { useRouter } from "next/router";
 import { PostCard } from "../../components/post-card";
 import { Layout } from "../../components/layout";
 import { Section } from "../../components/section";
-export default function Post({ blog, blogs }) {
+export default function Post({ work, works }) {
     const router = useRouter();
     const path = router.asPath;
     return (
         <Layout>
             <Head>
-                <title key={blog.id}>{blog.title}</title>
-                <meta property="og:title" content={blog.title} />
-                <meta property="og:description" content={blog.description} />
-                <meta property="og:image" content={blog.image} />
+                <title key={work.id}>{work.title}</title>
+                <meta property="og:title" content={work.title} />
+                <meta property="og:description" content={work.description} />
+                <meta property="og:image" content={work.image} />
                 <meta property="og:url" content={path} />
                 <meta property="og:type" content={"article"} />
             </Head>
@@ -21,10 +21,10 @@ export default function Post({ blog, blogs }) {
                 <div className="l-grid-full">
                     <div className={"p-article-header"}>
                         <p className={"p-article-category"}>
-                            {blog.category.category}
+                            {work.category.category}
                         </p>
-                        <h1 className="p-article-title">{blog.title}</h1>
-                        <date className={"p-article-date"}>{blog.date}</date>
+                        <h1 className="p-article-title">{work.title}</h1>
+                        <date className={"p-article-date"}>{work.date}</date>
                     </div>
                 </div>
                 <article className={"l-grid-article"}>
@@ -32,7 +32,7 @@ export default function Post({ blog, blogs }) {
                         <div
                             className=""
                             dangerouslySetInnerHTML={{
-                                __html: `${blog.body}`,
+                                __html: `${work.body}`,
                             }}
                         ></div>
                     </div>
@@ -42,12 +42,12 @@ export default function Post({ blog, blogs }) {
                 </aside>
             </div>
             <Section title={"Related Posts"}>
-                {blogs.slice(-3).map((blog) => (
-                    <div key={blog.id} className={"l-grid-medium"}>
+                {works.slice(-3).map((work) => (
+                    <div key={work.id} className={"l-grid-medium"}>
                         <PostCard
-                            title={blog.title}
-                            category={blog.category.category}
-                            slug={`/blog/${blog.id}`}
+                            title={work.title}
+                            category={work.category.category}
+                            slug={`/work/${work.id}`}
                         />
                     </div>
                 ))}
@@ -59,9 +59,9 @@ export const getStaticPaths = async () => {
     const key = {
         headers: { "X-API-KEY": process.env.API_KEY },
     };
-    const res = await fetch("https://hrkmtsmt.microcms.io/api/v1/blog", key);
+    const res = await fetch("https://hrkmtsmt.microcms.io/api/v1/work", key);
     const data = await res.json();
-    const paths = (data.contents || []).map((data) => `/blog/${data.id}`);
+    const paths = (data.contents || []).map((data) => `/work/${data.id}`);
     return { paths, fallback: false };
 };
 export const getStaticProps = async (context) => {
@@ -70,15 +70,15 @@ export const getStaticProps = async (context) => {
         headers: { "X-API-KEY": process.env.API_KEY },
     };
     const res = [
-        await fetch(`https://hrkmtsmt.microcms.io/api/v1/blog/${id}`, key),
-        await fetch("https://hrkmtsmt.microcms.io/api/v1/blog", key),
+        await fetch(`https://hrkmtsmt.microcms.io/api/v1/work/${id}`, key),
+        await fetch("https://hrkmtsmt.microcms.io/api/v1/work", key),
     ];
-    const blog = await res[0].json();
-    const blogs = await res[1].json();
+    const work = await res[0].json();
+    const works = await res[1].json();
     return {
         props: {
-            blog: blog,
-            blogs: blogs.contents,
+            work: work,
+            works: works.contents,
         },
     };
 };
