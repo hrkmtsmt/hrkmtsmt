@@ -1,12 +1,18 @@
 import React from "react";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { PostCard } from "../../components/post-card";
 import { Layout } from "../../components/layout";
 import { Section } from "../../components/section";
+dayjs.extend(utc);
+dayjs.extend(timezone);
 export default function Post({ work, works }) {
     const router = useRouter();
     const path = router.asPath;
+    const date = dayjs.utc(work.date).tz("Asia/Tokyo").format("YYYY/MM/DD");
     return (
         <Layout>
             <Head>
@@ -24,7 +30,9 @@ export default function Post({ work, works }) {
                             {work.category.category}
                         </p>
                         <h1 className="p-article-title">{work.title}</h1>
-                        <date className={"p-article-date"}>{work.date}</date>
+                        <date timezone={date} className={"p-article-date"}>
+                            {date}
+                        </date>
                     </div>
                 </div>
                 <article className={"l-grid-article"}>

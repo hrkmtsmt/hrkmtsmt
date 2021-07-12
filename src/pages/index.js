@@ -89,7 +89,7 @@ export default function Home({ blogs, works, intro }) {
                     ))}
                 </div>
                 <div className={"l-grid-full l-flex-center"}>
-                    <LinkButton link={"/"} cta={"a"} />
+                    <LinkButton link={"/blog"} cta={"a"} />
                 </div>
             </Section>
         </Layout>
